@@ -2,24 +2,33 @@
   "name": "GD32F470",
   "type": "ARM",
   "dependenceList": [],
-  "srcDirs": [],
+  "srcDirs": [
+    ".eide/deps"
+  ],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
     "folders": [
       {
-        "name": "User",
+        "name": "App",
+        "files": [],
+        "folders": []
+      },
+      {
+        "name": "CMSIS",
         "files": [
           {
-            "path": "User/gd32f4xx_it.c"
+            "path": "Firmware/CMSIS/GD/GD32F4xx/Source/ARM/startup_gd32f450_470.s"
           },
           {
-            "path": "User/main.c"
-          },
-          {
-            "path": "User/systick.c"
+            "path": "Firmware/CMSIS/GD/GD32F4xx/Source/system_gd32f4xx.c"
           }
         ],
+        "folders": []
+      },
+      {
+        "name": "Doc",
+        "files": [],
         "folders": []
       },
       {
@@ -116,38 +125,33 @@
         "folders": []
       },
       {
-        "name": "CMSIS",
-        "files": [
-          {
-            "path": "Firmware/CMSIS/GD/GD32F4xx/Source/system_gd32f4xx.c"
-          },
-          {
-            "path": "Firmware/CMSIS/GD/GD32F4xx/Source/ARM/startup_gd32f450_470.s"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "Doc",
-        "files": [],
-        "folders": []
-      },
-      {
-        "name": "App",
-        "files": [],
-        "folders": []
-      },
-      {
         "name": "Hardware",
         "files": [],
+        "folders": []
+      },
+      {
+        "name": "User",
+        "files": [
+          {
+            "path": "User/gd32f4xx_it.c"
+          },
+          {
+            "path": "User/main.c"
+          },
+          {
+            "path": "User/systick.c"
+          }
+        ],
         "folders": []
       }
     ]
   },
   "outDir": "build",
-  "deviceName": null,
-  "packDir": null,
-  "miscInfo": {},
+  "deviceName": "GD32F470ZG",
+  "packDir": ".pack/GigaDevice/GD32F4xx_DFP.3.0.3",
+  "miscInfo": {
+    "uid": "47722e997fb444677eb4ab191808c223"
+  },
   "targets": {
     "Target 1": {
       "excludeList": [],
@@ -265,34 +269,67 @@
         },
         "options": "null"
       },
-      "uploader": "JLink",
+      "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "baseAddr": "",
-        "cpuInfo": {
-          "vendor": "null",
-          "cpuName": "null"
-        },
-        "proType": 1,
-        "speed": 8000,
-        "otherCmds": ""
+        "target": "stm32f4x",
+        "interface": "${workspaceFolder}/link",
+        "baseAddr": "0x08000000"
       },
-      "uploadConfigMap": {},
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "GigaDevice",
+            "cpuName": "GD32F450ZG"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        },
+        "OpenOCD": {
+          "bin": "",
+          "target": "stm32f4x",
+          "interface": "${workspaceFolder}/link",
+          "baseAddr": "0x08000000"
+        },
+        "STLink": {
+          "bin": "",
+          "proType": "SWD",
+          "resetMode": "default",
+          "runAfterProgram": true,
+          "speed": 4000,
+          "address": "0x8000000",
+          "elFile": "None",
+          "optionBytes": ".eide/target 1.st.option.bytes.ini",
+          "otherCmds": ""
+        },
+        "pyOCD": {
+          "bin": "",
+          "targetName": "cortex_m",
+          "baseAddr": "0x08000000",
+          "speed": "4M",
+          "config": ".eide/target 1.pyocd.yaml"
+        }
+      },
       "custom_dep": {
         "name": "default",
-        "sourceDirList": [],
-        "libList": [],
         "incList": [
           "User",
           "Firmware/CMSIS",
           "Firmware/CMSIS/GD/GD32F4xx/Include",
           "Firmware/GD32F4xx_standard_peripheral/Include",
           ".cmsis/include",
-          "Project/RTE/_Target 1"
+          "Project/RTE/_Target 1",
+          ".eide/deps"
         ],
+        "libList": [],
+        "sourceDirList": [],
         "defineList": [
           "USE_STDPERIPH_DRIVER",
-          "GD32F450"
+          "GD32F450",
+          "GD32F470"
         ]
       }
     }

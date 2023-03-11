@@ -379,6 +379,10 @@ void ob_user_write(uint32_t ob_fwdgt, uint32_t ob_deepsleep, uint32_t ob_stdby);
 void ob_user_bor_threshold(uint32_t ob_bor_th);
 /* configure the boot mode */
 void ob_boot_mode_config(uint32_t boot_mode);
+#if defined (GD32F450) || defined (GD32F470)
+/* configure the double bank select */
+void ob_double_bank_select(uint32_t double_bank);
+#endif
 /* get the FMC user option byte */
 uint8_t ob_user_get(void);
 /* get the FMC option byte write protection */

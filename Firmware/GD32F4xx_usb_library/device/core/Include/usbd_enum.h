@@ -59,7 +59,11 @@ enum _str_index
     STR_IDX_SERIAL                = 0x3U,  /* serial string index */
     STR_IDX_CONFIG                = 0x4U,  /* configuration string index */
     STR_IDX_ITF                   = 0x5U,  /* interface string index */
+#ifndef WINUSB_EXEMPT_DRIVER
+    STR_IDX_MAX                   = 0x6U,  /* string maximum index */
+#else
     STR_IDX_MAX                   = 0xEFU, /* string maximum index */
+#endif /* WINUSB_EXEMPT_DRIVER */
 };
 
 typedef enum _usb_pwrsta {
