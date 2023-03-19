@@ -3,13 +3,20 @@
 /.settings
 /.eide/log
 /.eide.usr.ctx.json
+/.idea/
+
 
 # project out
 /build
 /bin
 /obj
 /out
+/cmake-build-debug-armgcc
+/3rd_party
 
 # eide template
 *.ept
 *.eide-template
+
+
+gd32f4xx_flash.ld

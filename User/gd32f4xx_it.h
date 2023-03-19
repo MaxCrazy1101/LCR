@@ -59,5 +59,12 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 /* this function handles SysTick exception */
 void SysTick_Handler(void);
-
+/* this function handles EXTI line0 interrupt. */
+void EXTI0_IRQHandler(void);
+/* this function handles EXTI line1 interrupt. */
+void EXTI1_IRQHandler(void);
+/* this function handles EXTI line2 interrupt. */
+void EXTI2_IRQHandler(void);
+/* this function handles EXTI line3 interrupt. */
+void EXTI3_IRQHandler(void);
 #endif /* GD32F4XX_IT_H */

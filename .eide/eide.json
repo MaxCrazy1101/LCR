@@ -3,12 +3,18 @@
   "type": "ARM",
   "dependenceList": [],
   "srcDirs": [
-    ".eide/deps"
+    ".eide/deps",
+    "Hardware"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
     "folders": [
+      {
+        "name": "3rd_party",
+        "files": [],
+        "folders": []
+      },
       {
         "name": "App",
         "files": [],
@@ -125,11 +131,6 @@
         "folders": []
       },
       {
-        "name": "Hardware",
-        "files": [],
-        "folders": []
-      },
-      {
         "name": "User",
         "files": [
           {
@@ -154,116 +155,38 @@
   },
   "targets": {
     "Target 1": {
-      "excludeList": [],
+      "excludeList": [
+        "<virtual_root>/Hardware/bsp_key.c"
+      ],
       "toolchain": "AC6",
       "compileConfig": {
         "cpuType": "Cortex-M4",
         "floatingPointHardware": "single",
-        "scatterFilePath": "",
         "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
         "storageLayout": {
           "RAM": [
-            {
-              "tag": "RAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
             {
               "tag": "IRAM",
               "id": 1,
               "mem": {
                 "startAddr": "0x20000000",
-                "size": "0x70000"
+                "size": "0x5000"
               },
               "isChecked": true,
-              "noInit": false
-            },
-            {
-              "tag": "IRAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x10000000",
-                "size": "0x10000"
-              },
-              "isChecked": false,
               "noInit": false
             }
           ],
           "ROM": [
             {
-              "tag": "ROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
               "tag": "IROM",
               "id": 1,
               "mem": {
-                "startAddr": "0x8000000",
-                "size": "0x100000"
+                "startAddr": "0x08000000",
+                "size": "0x10000"
               },
               "isChecked": true,
               "isStartup": true
-            },
-            {
-              "tag": "IROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
             }
           ]
         },
@@ -273,7 +196,7 @@
       "uploadConfig": {
         "bin": "",
         "target": "stm32f4x",
-        "interface": "${workspaceFolder}/link",
+        "interface": "${workspaceFolder}/dap_config",
         "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
@@ -322,14 +245,19 @@
           "Firmware/GD32F4xx_standard_peripheral/Include",
           ".cmsis/include",
           "Project/RTE/_Target 1",
-          ".eide/deps"
+          ".eide/deps",
+          "Hardware/Include",
+          "3rd_party/lvgl",
+          "3rd_party/lvgl/porting"
         ],
         "libList": [],
         "sourceDirList": [],
         "defineList": [
           "USE_STDPERIPH_DRIVER",
-          "GD32F450",
-          "GD32F470"
+          "GD32F470",
+          "REMOVEUNUSED",
+          "LV_CONF_INCLUDE_SIMPLE",
+          "ARM_MATH_LOOPUNROLL"
         ]
       }
     }
