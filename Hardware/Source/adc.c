@@ -82,7 +82,7 @@ void adc1_config()
 
     /* ADC 常规转换通道配置 */
     adc_channel_length_config(ADC1, ADC_ROUTINE_CHANNEL, 1);
-    adc_routine_channel_config(ADC1, 0, ADC_CHANNEL_15, ADC_SAMPLETIME_56);
+    adc_routine_channel_config(ADC1, 0, ADC_CHANNEL_15, ADC_SAMPLETIME_3);
 
     /* ADC 外部触发配置 */
     adc_external_trigger_config(ADC1, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_RISING); // 常规序列外部上升沿触发

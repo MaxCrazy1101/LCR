@@ -30,7 +30,44 @@
             "path": "Firmware/CMSIS/GD/GD32F4xx/Source/system_gd32f4xx.c"
           }
         ],
-        "folders": []
+        "folders": [
+          {
+            "name": "DSP",
+            "files": [
+              {
+                "path": "Firmware/CMSIS/DSP/Source/BasicMathFunctions/BasicMathFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/CommonTables/CommonTables.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/ComplexMathFunctions/ComplexMathFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/ControllerFunctions/ControllerFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/FastMathFunctions/FastMathFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/FilteringFunctions/FilteringFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/MatrixFunctions/MatrixFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/StatisticsFunctions/StatisticsFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/SupportFunctions/SupportFunctions.c"
+              },
+              {
+                "path": "Firmware/CMSIS/DSP/Source/TransformFunctions/TransformFunctions.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
       },
       {
         "name": "Doc",
@@ -156,7 +193,8 @@
   "targets": {
     "Target 1": {
       "excludeList": [
-        "<virtual_root>/Hardware/bsp_key.c"
+        "Firmware/CMSIS/DSP/ComputeGraph",
+        "Firmware/CMSIS/DSP/ComputeLibrary"
       ],
       "toolchain": "AC6",
       "compileConfig": {
@@ -171,7 +209,7 @@
               "id": 1,
               "mem": {
                 "startAddr": "0x20000000",
-                "size": "0x5000"
+                "size": "0x30000"
               },
               "isChecked": true,
               "noInit": false
@@ -183,7 +221,7 @@
               "id": 1,
               "mem": {
                 "startAddr": "0x08000000",
-                "size": "0x10000"
+                "size": "0x100000"
               },
               "isChecked": true,
               "isStartup": true
@@ -248,16 +286,17 @@
           ".eide/deps",
           "Hardware/Include",
           "3rd_party/lvgl",
-          "3rd_party/lvgl/porting"
+          "3rd_party/lvgl/porting",
+          "Firmware/CMSIS/DSP/Include",
+          "Firmware/CMSIS/DSP/PrivateInclude"
         ],
         "libList": [],
         "sourceDirList": [],
         "defineList": [
           "USE_STDPERIPH_DRIVER",
           "GD32F470",
-          "REMOVEUNUSED",
-          "LV_CONF_INCLUDE_SIMPLE",
-          "ARM_MATH_LOOPUNROLL"
+          "ARM_MATH_LOOPUNROLL",
+          "ARM_MATH_CM4"
         ]
       }
     }

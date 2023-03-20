@@ -325,15 +325,15 @@ void bsp_sdram_test(void)
     *(uint8_t *)(SDRAM_DEVICE0_ADDR) = (uint8_t)2;
     /*从SDRAM读取数据*/
     temp = *(uint8_t *)(SDRAM_DEVICE0_ADDR);
-    printf("8bit data:%lu\n", temp);
+    printf("8bit data:%u\n", temp);
     /*写/读 16位数据*/
     *(uint16_t *)(SDRAM_DEVICE0_ADDR + 10) = (uint16_t)456;
     temp                                   = *(uint16_t *)(SDRAM_DEVICE0_ADDR + 10);
-    printf("16bit data:%lu\n", temp);
+    printf("16bit data:%u\n", temp);
     /*写/读 32位数据*/
     *(uint32_t *)(SDRAM_DEVICE0_ADDR + 20) = (uint32_t)123;
     temp                                   = *(uint32_t *)(SDRAM_DEVICE0_ADDR + 20);
-    printf("32bit data:%lu\n", temp);
+    printf("32bit data:%u\n", temp);
     printf("Ready For SDRAM RW Test.\n");
-    printf("SDRAM TEST finished. Get Wrong %lu.\n", bsp_TestExtSDRAM());
+    printf("SDRAM TEST finished. Get Wrong %u.\n", bsp_TestExtSDRAM());
 }

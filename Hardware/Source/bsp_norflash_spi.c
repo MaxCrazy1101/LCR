@@ -278,4 +278,5 @@ void norflash_buffer_write(uint8_t *pBuffer, uint32_t WriteAddr, uint16_t NumByt
 
 uint8_t W25Qx_TEST()
 {
+    return 0;
 }

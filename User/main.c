@@ -40,6 +40,9 @@ OF SUCH DAMAGE.
 #include <stdio.h>
 #include "main.h"
 
+#include "math.h"
+#include "arm_math.h"
+
 #include "gpio.h"
 #include "dma.h"
 #include "dac.h"
@@ -91,12 +94,5 @@ int main(void)
         printf("The temperature data is %2.0f degrees Celsius\r ,Battery Voltage: %5.2f V\n", temperature, vref_value);
         printf("ADC1 Data[1]:%d\n", adc1_data[1]);
         delay_1ms(1000);
-        // LED2_ON;
-        // printf("LED2 ON\n");
-        // delay_1ms(100);
-        // LED2_OFF;
-        // printf("LED2 OFF\n");
-        // delay_1ms(100);
-        // break;
     }
 }
