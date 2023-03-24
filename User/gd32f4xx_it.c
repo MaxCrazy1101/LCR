@@ -36,9 +36,9 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f4xx_it.h"
-#include "main.h"
-#include "systick.h"
 #include "stdio.h"
+
+#define ERROR_INFO "\r\nEnter HardFault_Handler, System Halt.\r\n"
 
 /*!
     \brief    this function handles NMI exception
@@ -59,6 +59,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
     /* if Hard Fault exception occurs, go to infinite loop */
+    printf(ERROR_INFO);
     while (1) {
     }
 }
@@ -101,7 +102,8 @@ void UsageFault_Handler(void)
     while (1) {
     }
 }
-
+/* FreeRTOS Internal Defined */
+#ifndef USE_FREERTOS
 /*!
     \brief    this function handles SVC exception
     \param[in]  none
@@ -111,6 +113,16 @@ void UsageFault_Handler(void)
 void SVC_Handler(void)
 {
 }
+/*!
+    \brief    this function handles PendSV exception
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void PendSV_Handler(void)
+{
+}
+#endif
 
 /*!
     \brief    this function handles DebugMon exception
@@ -122,43 +134,35 @@ void DebugMon_Handler(void)
 {
 }
 
-/*!
-    \brief    this function handles PendSV exception
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void PendSV_Handler(void)
-{
-}
-
-/*!
-    \brief    this function handles SysTick exception
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void SysTick_Handler(void)
-{
-    delay_decrement();
-}
-
 /**
  * @brief This function handles EXTI line0 interrupt.
  */
 void EXTI0_IRQHandler(void)
 {
-    if (exti_interrupt_flag_get(EXTI_0) == SET) // 中断标志位为1
-    {
-        if (BSP_KEY_IN == 1) // 按键按下
-        {
-            /* 按键按下操作的功能 */
-            gpio_bit_toggle(PORT_LED2, PIN_LED2); // led电平状态翻转
-            printf("key press!\r\n");             // 串口打印key press!
-        } else {                                  // 按键释放
-            /* 按键松开操作的功能 */
-            printf("key release!\r\n"); // 串口打印key release!
-        }
-        exti_interrupt_flag_clear(EXTI_0); // 清中断标志位
-    }
+    // if (exti_interrupt_flag_get(EXTI_0) == SET) // 中断标志位为1
+    // {
+    //     if (BSP_KEY_IN == 1) // 按键按下
+    //     {
+    //         /* 按键按下操作的功能 */
+    //         gpio_bit_toggle(PORT_LED2, PIN_LED2); // led电平状态翻转
+    //         printf("key press!\r\n");             // 串口打印key press!
+    //     } else {                                  // 按键释放
+    //         /* 按键松开操作的功能 */
+    //         printf("key release!\r\n"); // 串口打印key release!
+    //     }
+    //     exti_interrupt_flag_clear(EXTI_0); // 清中断标志位
+    // }
+}
+
+/**
+ * @brief 47 This function handles I2C0_EV interrupt.
+ */
+void I2C0_EV_IRQHandler(void)
+{
+}
+/**
+ * @brief 48 This function handles I2C0_ER interrupt.
+ */
+void I2C0_ER_IRQHandler(void)
+{
 }

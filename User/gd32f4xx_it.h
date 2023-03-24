@@ -39,6 +39,11 @@ OF SUCH DAMAGE.
 #define GD32F4XX_IT_H
 
 #include "gd32f4xx.h"
+#include "main.h"
+#ifdef USE_FREERTOS
+#include "FreeRTOS.h"
+#include "task.h"
+#endif
 
 /* function declarations */
 /* this function handles NMI exception */

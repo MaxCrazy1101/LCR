@@ -39,13 +39,13 @@ void gpio_config()
     /* 按键 引脚配置 下拉输入*/
     gpio_mode_set(BSP_KEY_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, BSP_KEY_PIN); // 默认低电平 下拉
     /* 使能NVIC中断 中断分组为2位抢占优先级，2位子优先级 */
-    nvic_irq_enable(EXTI0_IRQn, 3U, 3U); // 抢占优先级3，子优先级3
-    /* 连接中断线到GPIO */
-    syscfg_exti_line_config(EXTI_SOURCE_GPIOA, EXTI_SOURCE_PIN0);
-    /* 初始化中断线 */
-    exti_init(EXTI_0, EXTI_INTERRUPT, EXTI_TRIG_BOTH);
-    /* 使能中断 */
-    exti_interrupt_enable(EXTI_0);
-    /* 清除中断标志位 */
-    exti_interrupt_flag_clear(EXTI_0);
+    // nvic_irq_enable(EXTI0_IRQn, 3U, 3U); // 抢占优先级3，子优先级3
+    // /* 连接中断线到GPIO */
+    // syscfg_exti_line_config(EXTI_SOURCE_GPIOA, EXTI_SOURCE_PIN0);
+    // /* 初始化中断线 */
+    // exti_init(EXTI_0, EXTI_INTERRUPT, EXTI_TRIG_BOTH);
+    // /* 使能中断 */
+    // exti_interrupt_enable(EXTI_0);
+    // /* 清除中断标志位 */
+    // exti_interrupt_flag_clear(EXTI_0);
 }

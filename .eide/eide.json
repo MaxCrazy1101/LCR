@@ -4,7 +4,9 @@
   "dependenceList": [],
   "srcDirs": [
     ".eide/deps",
-    "Hardware"
+    "Hardware",
+    "FreeRTOS",
+    "App"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -12,11 +14,6 @@
     "folders": [
       {
         "name": "3rd_party",
-        "files": [],
-        "folders": []
-      },
-      {
-        "name": "App",
         "files": [],
         "folders": []
       },
@@ -171,7 +168,13 @@
         "name": "User",
         "files": [
           {
+            "path": "User/FreeRTOSHook.c"
+          },
+          {
             "path": "User/gd32f4xx_it.c"
+          },
+          {
+            "path": "User/gd32f4xx_tim_it.c"
           },
           {
             "path": "User/main.c"
@@ -194,22 +197,46 @@
     "Target 1": {
       "excludeList": [
         "Firmware/CMSIS/DSP/ComputeGraph",
-        "Firmware/CMSIS/DSP/ComputeLibrary"
+        "Firmware/CMSIS/DSP/ComputeLibrary",
+        "FreeRTOS/portable/MemMang/heap_5.c",
+        "FreeRTOS/portable/MemMang/heap_3.c",
+        "FreeRTOS/portable/MemMang/heap_2.c",
+        "FreeRTOS/portable/MemMang/heap_1.c"
       ],
       "toolchain": "AC6",
       "compileConfig": {
         "cpuType": "Cortex-M4",
         "floatingPointHardware": "single",
-        "useCustomScatterFile": false,
-        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
+        "useCustomScatterFile": true,
+        "scatterFilePath": "GD32F470.sct",
         "storageLayout": {
           "RAM": [
+            {
+              "tag": "RAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0xC0000000",
+                "size": "0x10000000"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
             {
               "tag": "IRAM",
               "id": 1,
               "mem": {
                 "startAddr": "0x20000000",
                 "size": "0x30000"
+              },
+              "isChecked": true,
+              "noInit": false
+            },
+            {
+              "tag": "IRAM",
+              "id": 2,
+              "mem": {
+                "startAddr": "0x10000000",
+                "size": "0x10000"
               },
               "isChecked": true,
               "noInit": false
@@ -288,7 +315,10 @@
           "3rd_party/lvgl",
           "3rd_party/lvgl/porting",
           "Firmware/CMSIS/DSP/Include",
-          "Firmware/CMSIS/DSP/PrivateInclude"
+          "Firmware/CMSIS/DSP/PrivateInclude",
+          "FreeRTOS/include",
+          "FreeRTOS/portable/GCC/ARM_CM4F",
+          "App/Include"
         ],
         "libList": [],
         "sourceDirList": [],

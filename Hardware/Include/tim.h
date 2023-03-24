@@ -26,4 +26,6 @@ void tim3_disable();
 
 void tim5_config(uint16_t prescaler, uint16_t period); // 基本定时器配置
 
+void tim6_config(uint16_t prescaler, uint16_t period); // 基本定时器配置
+
 #endif /* _BSP_BASIC_TIMER_H */

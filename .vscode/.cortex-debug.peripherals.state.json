@@ -1,1 +1,1 @@
-[]
+[{"node":"TIMER6","expanded":true,"format":0,"pinned":false},{"node":"TIMER6.CTL0","expanded":true,"format":0},{"node":"TIMER6.CTL1","expanded":true,"format":0},{"node":"TIMER6.DMAINTEN","expanded":true,"format":0},{"node":"TIMER6.INTF","expanded":true,"format":0},{"node":"TIMER6.SWEVG","expanded":true,"format":0},{"node":"TIMER6.CNT","expanded":true,"format":0},{"node":"TIMER6.PSC","expanded":true,"format":0},{"node":"TIMER6.CAR","expanded":true,"format":0}]
