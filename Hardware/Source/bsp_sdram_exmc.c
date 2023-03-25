@@ -29,7 +29,7 @@
  *
  * @param sdram_device [EXMC_SDRAM_DEVICE0] 或者 [EXMC_SDRAM_DEVICE1]
  */
-void bsp_exmc_sdram_init(uint32_t sdram_device)
+void bsp_init_extsdram(uint32_t sdram_device)
 {
     uint32_t timeout = 0;
 
@@ -105,9 +105,9 @@ void bsp_exmc_sdram_init(uint32_t sdram_device)
         .sdram_device         = EXMC_SDRAM_DEVICE0,
         .pipeline_read_delay  = EXMC_PIPELINE_DELAY_2_HCLK,
         .burst_read_switch    = ENABLE,
-        .sdclock_config       = EXMC_SDCLK_PERIODS_3_HCLK, // 使用2分频 240MHz/2=120MHz
+        .sdclock_config       = EXMC_SDCLK_PERIODS_2_HCLK, // 使用2分频 240MHz/2=120MHz
         .write_protection     = DISABLE,
-        .cas_latency          = EXMC_CAS_LATENCY_3_SDCLK, // CAS 也就是CL参数
+        .cas_latency          = EXMC_CAS_LATENCY_2_SDCLK, // CAS 也就是CL参数
         .internal_bank_number = EXMC_SDRAM_4_INTER_BANK,
         .data_width           = EXMC_SDRAM_DATABUS_WIDTH_16B,
         .row_address_width    = EXMC_SDRAM_ROW_ADDRESS_13,
@@ -145,7 +145,7 @@ void bsp_exmc_sdram_init(uint32_t sdram_device)
     sdram_command_init_struct.auto_refresh_number   = EXMC_SDRAM_AUTO_REFLESH_2_SDCLK;
     sdram_command_init_struct.mode_register_content = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1 |
                                                       SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL |
-                                                      SDRAM_MODEREG_CAS_LATENCY_3 |
+                                                      SDRAM_MODEREG_CAS_LATENCY_2 |
                                                       SDRAM_MODEREG_OPERATING_MODE_STANDARD |
                                                       SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
     /* wait until the SDRAM controller is ready */
@@ -159,7 +159,8 @@ void bsp_exmc_sdram_init(uint32_t sdram_device)
     /* 64ms, 8192-cycle refresh, 64ms/8192=7.81us */
     /* SDCLK_Freq = SYS_Freq/2 */
     /* (7.81 us * SDCLK_Freq) - 20 */
-    exmc_sdram_refresh_count_set(761);
+
+    exmc_sdram_refresh_count_set(917);
 
     /* wait until the SDRAM controller is ready */
     timeout = SDRAM_TIMEOUT;

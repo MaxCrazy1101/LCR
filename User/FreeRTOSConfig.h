@@ -91,7 +91,7 @@ extern volatile uint32_t ulHighFrequencyTimerCounts; /* 在高精度定时器中
 /*************************************************************************************************************/
 #define configAPPLICATION_ALLOCATED_HEAP 1                     // main中手动分配内存到ccm
 #define configSUPPORT_DYNAMIC_ALLOCATION 1                     // 支持动态内存申请
-#define configTOTAL_HEAP_SIZE            ((size_t)(48 * 1024)) // 系统所有总的堆大小
+#define configTOTAL_HEAP_SIZE            ((size_t)(56 * 1024)) // 系统所有总的堆大小
 
 /*************************************************************************************************************/
 /*                                FreeRTOS与协程有关的配置选项                                                  */

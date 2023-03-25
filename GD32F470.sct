@@ -34,7 +34,7 @@ LR_IROM1 0x08000000 0x00100000 {
         ;mid_param.o(+RW +ZI)
 	}
 	RW_RAM1 0xC0000000 0x10000000 {
-		.ANY (EXRAM) 
+		.ANY (EXTSDRAM) 
 	}
 }
 

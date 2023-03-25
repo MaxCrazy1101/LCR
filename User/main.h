@@ -40,7 +40,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx_direct_io.h"
 
-#define USE_FREERTOS     1
+#define USE_FREERTOS 1
 
 #define RCU_LED1     RCU_GPIOE
 #define PORT_LED1    GPIOE

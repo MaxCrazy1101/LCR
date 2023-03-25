@@ -71,6 +71,7 @@ void bsp_Init(void)
 {
     /* 开启系统配置时钟 */
     rcu_periph_clock_enable(RCU_SYSCFG);
+    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
 
     systick_config();
     gpio_config();
@@ -78,6 +79,7 @@ void bsp_Init(void)
     dma_config();
     dac_config();
     adc_config();
+    bsp_init_extsdram(EXMC_SDRAM_DEVICE0);
     timer_clk_config();
     tim2_enable();
     tim3_enable();
@@ -114,7 +116,7 @@ int main(void)
     // bsp_spi_norflash_init();
     //    basic_timer_config(24000, 10000);
     // pwm_config(240, 10000);
-    // bsp_exmc_sdram_init(EXMC_SDRAM_DEVICE0);
+    // bsp_init_extsdram(EXMC_SDRAM_DEVICE0);
     // printf("Initialization Complate!\n");
     // printf("Get Flash ID: %X\n", norflash_read_JEDEC_ID());
 

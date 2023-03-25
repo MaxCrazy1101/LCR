@@ -3,9 +3,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "main.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
+#include "event_groups.h"
 
 /**
  * @brief 创建任务

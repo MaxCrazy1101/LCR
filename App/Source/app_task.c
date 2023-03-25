@@ -1,10 +1,14 @@
 #include "stdio.h"
 #include "stdarg.h"
 
+#include "math.h"
+#include "arm_math.h"
+
 #include "my_app.h"
 #include "bsp_led.h"
 #include "bsp_key.h"
 #include "adc.h"
+
 /*
 **********************************************************************************************************
                                             函数声明
@@ -15,6 +19,7 @@ static void task_led(void *pvParameters);
 static void task_adc0(void *pvParameters);
 static void task_start(void *pvParameters);
 static void task_user_if(void *pvParameters);
+static void task_lcr(void *pvParameters);
 static void vTaskMsgPro(void *pvParameters);
 static void vTaskStart(void *pvParameters);
 static void app_create_object(void);
@@ -25,13 +30,20 @@ static void thread_safe_printf(char *format, ...);
                                             变量声明
 **********************************************************************************************************
 */
+/* 任务句柄 */
 static TaskHandle_t xHandleTaskLED    = NULL;
 static TaskHandle_t xHandleTaskADC0   = NULL;
 static TaskHandle_t xHandleTaskScan   = NULL;
 static TaskHandle_t xHandleTaskUserIF = NULL;
 // static TaskHandle_t xHandleTaskMsgPro = NULL;
 // static TaskHandle_t xHandleTaskStart  = NULL;
-static SemaphoreHandle_t xMutex = NULL;
+
+/* 互斥量句柄 */
+static SemaphoreHandle_t xMutex       = NULL;
+EventGroupHandle_t xCreatedEventGroup = NULL;
+
+arm_rfft_fast_instance_f32 S;
+uint32_t fft_size = 2048;
 
 static void vTaskUsageRate(void)
 {
@@ -47,39 +59,89 @@ void app_create_task(void)
 {
     /*进入临界区*/
     taskENTER_CRITICAL();
-
-    /*创建按键扫描任务*/
-    xTaskCreate((TaskFunction_t)task_start,
-                (const char *)"task_scan",
-                (uint16_t)512,
+    /*创建LED任务*/
+    xTaskCreate((TaskFunction_t)task_led,
+                (const char *)"led_toggle",
+                (uint16_t)128,
                 (void *)NULL,
-                (UBaseType_t)16,
-                (TaskHandle_t *)&xHandleTaskScan);
+                (UBaseType_t)1,
+                (TaskHandle_t *)&xHandleTaskLED);
     /*创建LED任务*/
     xTaskCreate((TaskFunction_t)task_user_if,
                 (const char *)"task_user_if",
                 (uint16_t)512,
                 (void *)NULL,
-                (UBaseType_t)14,
+                (UBaseType_t)2,
                 (TaskHandle_t *)&xHandleTaskUserIF);
+    /*创建按键扫描任务*/
+    xTaskCreate((TaskFunction_t)task_start,
+                (const char *)"task_scan",
+                (uint16_t)512,
+                (void *)NULL,
+                (UBaseType_t)3,
+                (TaskHandle_t *)&xHandleTaskScan);
     /*创建ADC0任务*/
     xTaskCreate((TaskFunction_t)task_adc0,
                 (const char *)"app_adc0",
                 (uint16_t)512,
                 (void *)NULL,
+                (UBaseType_t)4,
+                (TaskHandle_t *)&xHandleTaskADC0);
+    /*创建LCR任务*/
+    xTaskCreate((TaskFunction_t)task_lcr,
+                (const char *)"app_lcr",
+                (uint16_t)512,
+                (void *)NULL,
                 (UBaseType_t)15,
                 (TaskHandle_t *)&xHandleTaskADC0);
 
-    /*创建LED任务*/
-    xTaskCreate((TaskFunction_t)task_led,
-                (const char *)"led_toggle",
-                (uint16_t)512,
-                (void *)NULL,
-                (UBaseType_t)16,
-                (TaskHandle_t *)&xHandleTaskLED);
     /*退出临界区,任务级临界区不允许嵌套,中断级允许 */
     taskEXIT_CRITICAL();
 }
+
+/**
+ * @brief LCR测量 优先级
+ *
+ * @param pvParameters
+ */
+static void task_lcr(void *pvParameters)
+{
+    /* 实数rfft点数 */
+    fft_size = 2048;
+
+    /* 初始化结构体S中的参数 */
+    arm_rfft_fast_init_f32(&S, fft_size);
+    // while (1) {
+    //     if (os_evt_wait_or(StartTaskWaitFlag, 0xFFFF) == OS_R_EVT) {
+    //         xResult = os_evt_get();
+
+    //         switch (xResult) {
+    //             case DspFFT2048Pro_15:
+    //                 /* 读取的是ADC3的位置 */
+    //                 g_DSO1->usCurPos = 10240 - DMA2_Stream1->NDTR;
+
+    //                 /* 读取的是ADC1的位置 */
+    //                 g_DSO2->usCurPos = 10240 - DMA2_Stream0->NDTR;
+
+    //                 DSO2_WaveTrig(g_DSO2->usCurPos);
+    //                 DSO1_WaveTrig(g_DSO1->usCurPos);
+    //                 DSO2_WaveProcess();
+    //                 DSO1_WaveProcess();
+    //                 break;
+
+    //             case DspMultiMeterPro_0:
+    //                 g_uiAdcAvgSample = ADC_GetSampleAvgN();
+    //                 break;
+
+    //             /* 其它位暂未使用 */
+    //             default:
+    //                 printf_taskdbg("xResult = %x\r\n", xResult);
+    //                 break;
+    //         }
+    //     }
+    // }
+}
+
 /**
  * @brief adc0信息读取
  *
@@ -209,6 +271,13 @@ static void task_start(void *pvParameters)
 *	返 回 值: 无
 *********************************************************************************************************
 */
+
+/**
+ * @brief 线程安全的printf方式
+ *
+ * @param format 同printf的参数。
+ * @param ... 在C中，当无法列出传递函数的所有实参的类型和数目时,可以用省略号指定参数表
+ */
 static void thread_safe_printf(char *format, ...)
 {
     char buf_str[200 + 1];
@@ -228,10 +297,12 @@ static void thread_safe_printf(char *format, ...)
 
     xSemaphoreGive(xMutex);
 }
+
 void os_error_print()
 {
-    printf("ERROR");
+    printf("OS STARTUP ERROR!\r\n");
 }
+
 /**
  * @brief 任务通信变量初始化
  *
@@ -242,6 +313,13 @@ static void app_create_object(void)
     xMutex = xSemaphoreCreateMutex();
 
     if (xMutex == NULL) {
+        /* 没有创建成功，用户可以在这里加入创建失败的处理机制 */
+        os_error_print();
+    }
+    /* 创建事件标志组 */
+    xCreatedEventGroup = xEventGroupCreate();
+
+    if (xCreatedEventGroup == NULL) {
         /* 没有创建成功，用户可以在这里加入创建失败的处理机制 */
         os_error_print();
     }

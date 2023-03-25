@@ -19,7 +19,7 @@
 
 #define BSP_SDRAM_SIZE     0x100000
 
-void bsp_exmc_sdram_init(uint32_t sdram_device);
+void bsp_init_extsdram(uint32_t sdram_device);
 uint32_t bsp_TestExtSDRAM(void);
 void bsp_sdram_test(void);
 #endif /* _BSP_SDRAM_FMC_H */
