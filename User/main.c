@@ -110,6 +110,7 @@ int main(void)
 
     /* 硬件初始化 */
     bsp_Init();
+    // bsp_sdram_test();
     /* 进入FreeRTOS */
     app_main();
 

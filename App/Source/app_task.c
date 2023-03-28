@@ -20,7 +20,9 @@ static void task_adc0(void *pvParameters);
 static void task_start(void *pvParameters);
 static void task_user_if(void *pvParameters);
 static void task_lcr(void *pvParameters);
-static void vTaskMsgPro(void *pvParameters);
+static void task_test_only_once(void *pvParameters)
+
+    static void vTaskMsgPro(void *pvParameters);
 static void vTaskStart(void *pvParameters);
 static void app_create_object(void);
 static void thread_safe_printf(char *format, ...);
@@ -33,8 +35,10 @@ static void thread_safe_printf(char *format, ...);
 /* 任务句柄 */
 static TaskHandle_t xHandleTaskLED    = NULL;
 static TaskHandle_t xHandleTaskADC0   = NULL;
+static TaskHandle_t xHandleTaskLCR    = NULL;
 static TaskHandle_t xHandleTaskScan   = NULL;
 static TaskHandle_t xHandleTaskUserIF = NULL;
+static TaskHandle_t xHandleTaskTEST   = NULL;
 // static TaskHandle_t xHandleTaskMsgPro = NULL;
 // static TaskHandle_t xHandleTaskStart  = NULL;
 
@@ -87,13 +91,20 @@ void app_create_task(void)
                 (void *)NULL,
                 (UBaseType_t)4,
                 (TaskHandle_t *)&xHandleTaskADC0);
+    /*创建TEST任务*/
+    xTaskCreate((TaskFunction_t)task_test_only_once,
+                (const char *)"app_test",
+                (uint16_t)512,
+                (void *)NULL,
+                (UBaseType_t)15,
+                (TaskHandle_t *)&xHandleTaskTEST);
     /*创建LCR任务*/
     xTaskCreate((TaskFunction_t)task_lcr,
                 (const char *)"app_lcr",
                 (uint16_t)512,
                 (void *)NULL,
                 (UBaseType_t)15,
-                (TaskHandle_t *)&xHandleTaskADC0);
+                (TaskHandle_t *)&xHandleTaskLCR);
 
     /*退出临界区,任务级临界区不允许嵌套,中断级允许 */
     taskEXIT_CRITICAL();
@@ -111,35 +122,36 @@ static void task_lcr(void *pvParameters)
 
     /* 初始化结构体S中的参数 */
     arm_rfft_fast_init_f32(&S, fft_size);
-    // while (1) {
-    //     if (os_evt_wait_or(StartTaskWaitFlag, 0xFFFF) == OS_R_EVT) {
-    //         xResult = os_evt_get();
+    while (1) {
+        //     if (os_evt_wait_or(StartTaskWaitFlag, 0xFFFF) == OS_R_EVT) {
+        //         xResult = os_evt_get();
 
-    //         switch (xResult) {
-    //             case DspFFT2048Pro_15:
-    //                 /* 读取的是ADC3的位置 */
-    //                 g_DSO1->usCurPos = 10240 - DMA2_Stream1->NDTR;
+        //         switch (xResult) {
+        //             case DspFFT2048Pro_15:
+        //                 /* 读取的是ADC3的位置 */
+        //                 g_DSO1->usCurPos = 10240 - DMA2_Stream1->NDTR;
 
-    //                 /* 读取的是ADC1的位置 */
-    //                 g_DSO2->usCurPos = 10240 - DMA2_Stream0->NDTR;
+        //                 /* 读取的是ADC1的位置 */
+        //                 g_DSO2->usCurPos = 10240 - DMA2_Stream0->NDTR;
 
-    //                 DSO2_WaveTrig(g_DSO2->usCurPos);
-    //                 DSO1_WaveTrig(g_DSO1->usCurPos);
-    //                 DSO2_WaveProcess();
-    //                 DSO1_WaveProcess();
-    //                 break;
+        //                 DSO2_WaveTrig(g_DSO2->usCurPos);
+        //                 DSO1_WaveTrig(g_DSO1->usCurPos);
+        //                 DSO2_WaveProcess();
+        //                 DSO1_WaveProcess();
+        //                 break;
 
-    //             case DspMultiMeterPro_0:
-    //                 g_uiAdcAvgSample = ADC_GetSampleAvgN();
-    //                 break;
+        //             case DspMultiMeterPro_0:
+        //                 g_uiAdcAvgSample = ADC_GetSampleAvgN();
+        //                 break;
 
-    //             /* 其它位暂未使用 */
-    //             default:
-    //                 printf_taskdbg("xResult = %x\r\n", xResult);
-    //                 break;
-    //         }
-    //     }
-    // }
+        //             /* 其它位暂未使用 */
+        //             default:
+        //                 printf_taskdbg("xResult = %x\r\n", xResult);
+        //                 break;
+        //         }
+        //     }
+        vTaskDelay(1000);
+    }
 }
 
 /**
@@ -203,6 +215,17 @@ static void task_user_if(void *pvParameters)
 }
 
 /**
+ * @brief 用于测试,代码只会执行一次 优先级
+ *
+ * @param pvParameters
+ */
+static void task_test_only_once(void *pvParameters)
+{
+    while (1) {
+    }
+}
+
+/**
  * @brief LED闪烁 优先级
  *
  * @param pvParameters
@@ -261,16 +284,6 @@ static void task_start(void *pvParameters)
         // }
     }
 }
-
-/*
-*********************************************************************************************************
-*	函 数 名: thread_safe_printf
-*	功能说明: 线程安全的printf方式
-*	形    参: 同printf的参数。
-*             在C中，当无法列出传递函数的所有实参的类型和数目时,可以用省略号指定参数表
-*	返 回 值: 无
-*********************************************************************************************************
-*/
 
 /**
  * @brief 线程安全的printf方式
