@@ -200,14 +200,14 @@ void tim5_config(uint16_t prescaler, uint16_t period)
 
     timer_init(TIMER5, &timere_initpara); // 初始化定时器
 
-    timer_autoreload_value_config(TIMER5, 0xFF);
+    timer_autoreload_value_config(TIMER5, 0x00);
     timer_auto_reload_shadow_enable(TIMER5);
     timer_master_output_trigger_source_select(TIMER5, TIMER_TRI_OUT_SRC_UPDATE); // 更新事件
 
     /* 无需中断 */
     /* 配置中断优先级 */
     // nvic_irq_enable(BSP_TIMER_IRQ, 10, 0);        // 设置中断优先级为 3,2
-                                                  /* 使能中断 */
+    /* 使能中断 */
     // timer_interrupt_enable(TIMER5, TIMER_INT_UP); // 使能更新事件中断
 
     /* 使能定时器 */
@@ -250,7 +250,7 @@ void tim6_config(uint16_t prescaler, uint16_t period)
 
     /* 无需中断 */
     /* 配置中断优先级 */
-    nvic_irq_enable(TIMER6_IRQn, 10, 0);        // 设置中断优先级为 3,2
+    nvic_irq_enable(TIMER6_IRQn, 10, 0);          // 设置中断优先级为 3,2
                                                   /* 使能中断 */
     timer_interrupt_enable(TIMER6, TIMER_INT_UP); // 使能更新事件中断
 

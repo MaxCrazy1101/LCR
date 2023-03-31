@@ -49,4 +49,9 @@ void gpio_config()
     // exti_interrupt_enable(EXTI_0);
     // /* 清除中断标志位 */
     // exti_interrupt_flag_clear(EXTI_0);
+
+    /* 锂电池输出控制 PF9 */
+    // PWR_OFF;
+    // gpio_mode_set(GPIOF, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_9);
+    // gpio_output_options_set(GPIOF, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, GPIO_PIN_9);
 }

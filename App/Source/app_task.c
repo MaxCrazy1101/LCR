@@ -200,7 +200,7 @@ static void task_adc0(void *pvParameters)
         vref_value    = (adc0_data[2] * 3.3f / 4096);
 
         // printf("The temperature origin data is %d \r ,Battery Voltage origin data: %d \n", adc0_data[0], adc0_data[1]);
-        thread_safe_printf("Battery: %5.2f V, Temperature: %2.0f degrees Celsius, Vref: %5.2fV.\r\n", battery_value, temperature, vref_value);
+        thread_safe_printf("Battery: %5.2f V, Temperature: %2.0f degrees Celsius, Vref: %5.2fV.\r\n", adc0_data[0] * 3.3f * 2 / 4096, temperature, vref_value);
         if (battery_value < 0) {
             battery_value = 0;
         } else if (battery_value > 100) {

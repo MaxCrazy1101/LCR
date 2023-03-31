@@ -62,4 +62,7 @@ OF SUCH DAMAGE.
 #define BSP_KEY_PIN  GPIO_PIN_0
 #define BSP_KEY_IN   PAin(0)
 
+#define PWR_ON       PFout(9) = 1;
+#define PWR_OFF      PFout(9) = 0;
+
 #endif /* __MAIN_H */

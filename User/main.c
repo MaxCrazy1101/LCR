@@ -85,7 +85,7 @@ void bsp_Init(void)
     timer_clk_config();
     tim2_enable();
     tim3_enable();
-    // tim5_config(240, 10);//10us ->10k
+    tim5_config(240, 10);//1M 1 100->10k 1M 10 100->1k
     tim6_config(240, 100); // 100us
     usart_gpio_config();
     LCD_Init();

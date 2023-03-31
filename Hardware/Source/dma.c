@@ -40,6 +40,7 @@ void dma_config()
     // dma_channel_enable(DMA0, DMA_CH4);//暂不开启
 
     /* 配置 DMA0 channel 5 */
+    dma_deinit(DMA0, DMA_CH5);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_FEEIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_SDEIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_TAEIF);
