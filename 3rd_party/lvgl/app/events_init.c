@@ -1,0 +1,18 @@
+/*
+ * Copyright 2023 NXP
+ * SPDX-License-Identifier: MIT
+ * The auto-generated can only be used on NXP devices
+ */
+
+#include "events_init.h"
+#include <stdio.h>
+#include "lvgl.h"
+
+void events_init(lv_ui *ui)
+{
+}
+
+void video_play(lv_ui *ui)
+{
+
+}

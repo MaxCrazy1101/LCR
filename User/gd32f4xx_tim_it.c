@@ -28,8 +28,8 @@ extern void xPortSysTickHandler(void);
 void SysTick_Handler(void)
 {
     // static uint8_t s_counter = 0;
-
     delay_decrement();
+    lv_tick_inc(1);
     // bsp_per_ms();
     // FreeRTOS时钟源
     if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) // 系统已经运行

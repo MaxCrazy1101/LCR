@@ -5,9 +5,25 @@
 #include "arm_math.h"
 
 #include "my_app.h"
+#include "bsp_lcd.h"
 #include "bsp_led.h"
 #include "bsp_key.h"
 #include "adc.h"
+
+#include "lvgl.h"
+#include "lv_port_disp.h"
+
+#include "gui_guider.h"
+#include "events_init.h"
+
+// #include "lv_demos.h"
+// #include "lv_examples.h"
+/*
+**********************************************************************************************************
+                                            宏定义
+**********************************************************************************************************
+*/
+#define TEMPERATURE_ADJUST -22
 
 /*
 **********************************************************************************************************
@@ -20,9 +36,11 @@ static void task_adc0(void *pvParameters);
 static void task_start(void *pvParameters);
 static void task_user_if(void *pvParameters);
 static void task_lcr(void *pvParameters);
-static void task_test_only_once(void *pvParameters)
+static void task_gui(void *pvParameters);
 
-    static void vTaskMsgPro(void *pvParameters);
+static void task_test_only_once(void *pvParameters);
+
+static void vTaskMsgPro(void *pvParameters);
 static void vTaskStart(void *pvParameters);
 static void app_create_object(void);
 static void thread_safe_printf(char *format, ...);
@@ -32,12 +50,15 @@ static void thread_safe_printf(char *format, ...);
                                             变量声明
 **********************************************************************************************************
 */
+/* GUI */
+lv_ui gui_guider;
 /* 任务句柄 */
 static TaskHandle_t xHandleTaskLED    = NULL;
 static TaskHandle_t xHandleTaskADC0   = NULL;
 static TaskHandle_t xHandleTaskLCR    = NULL;
 static TaskHandle_t xHandleTaskScan   = NULL;
 static TaskHandle_t xHandleTaskUserIF = NULL;
+static TaskHandle_t xHandleTaskGUI    = NULL;
 static TaskHandle_t xHandleTaskTEST   = NULL;
 // static TaskHandle_t xHandleTaskMsgPro = NULL;
 // static TaskHandle_t xHandleTaskStart  = NULL;
@@ -70,6 +91,7 @@ void app_create_task(void)
                 (void *)NULL,
                 (UBaseType_t)1,
                 (TaskHandle_t *)&xHandleTaskLED);
+
     /*创建LED任务*/
     xTaskCreate((TaskFunction_t)task_user_if,
                 (const char *)"task_user_if",
@@ -77,19 +99,26 @@ void app_create_task(void)
                 (void *)NULL,
                 (UBaseType_t)2,
                 (TaskHandle_t *)&xHandleTaskUserIF);
+    /*创建GUI任务*/
+    xTaskCreate((TaskFunction_t)task_gui,
+                (const char *)"app_gui",
+                (uint16_t)512,
+                (void *)NULL,
+                (UBaseType_t)3,
+                (TaskHandle_t *)&xHandleTaskGUI);
     /*创建按键扫描任务*/
     xTaskCreate((TaskFunction_t)task_start,
                 (const char *)"task_scan",
                 (uint16_t)512,
                 (void *)NULL,
-                (UBaseType_t)3,
+                (UBaseType_t)4,
                 (TaskHandle_t *)&xHandleTaskScan);
     /*创建ADC0任务*/
     xTaskCreate((TaskFunction_t)task_adc0,
                 (const char *)"app_adc0",
                 (uint16_t)512,
                 (void *)NULL,
-                (UBaseType_t)4,
+                (UBaseType_t)14,
                 (TaskHandle_t *)&xHandleTaskADC0);
     /*创建TEST任务*/
     xTaskCreate((TaskFunction_t)task_test_only_once,
@@ -155,20 +184,35 @@ static void task_lcr(void *pvParameters)
 }
 
 /**
- * @brief adc0信息读取
+ * @brief adc0信息处理
  *
  * @param pvParameters
  */
 static void task_adc0(void *pvParameters)
 {
+    float battery_value;
     float temperature;
     float vref_value;
+    vTaskDelay(1000);
     while (1) {
-        temperature = (1.43f - adc0_data[0] * 3.3f / 4096) * 1000 / 4.3f + 25;
-        vref_value  = (adc0_data[1] * 3.3f / 4096);
+        battery_value = (adc0_data[0] * 3.3f * 2 / 4096 - 3.0f) / 1.2f * 100;
+        temperature   = (1.43f - adc0_data[1] * 3.3f / 4096) * 1000 / 4.3f + 25 + TEMPERATURE_ADJUST;
+        vref_value    = (adc0_data[2] * 3.3f / 4096);
+
         // printf("The temperature origin data is %d \r ,Battery Voltage origin data: %d \n", adc0_data[0], adc0_data[1]);
-        thread_safe_printf("Temperature: %2.0f degrees Celsius, Vref: %5.2f V.\r\n", temperature, vref_value);
+        thread_safe_printf("Battery: %5.2f V, Temperature: %2.0f degrees Celsius, Vref: %5.2fV.\r\n", battery_value, temperature, vref_value);
+        if (battery_value < 0) {
+            battery_value = 0;
+        } else if (battery_value > 100) {
+            battery_value = 100;
+        }
+
         // printf("ADC1 Data[1]:%d\n", adc1_data[1]);
+        /* 修改电量数据 */
+        lv_bar_set_value(gui_guider.screen_battery_bar, (int32_t)battery_value, LV_ANIM_ON);
+        lv_label_set_text_fmt(gui_guider.screen_battery_text, "%3d%%", (int32_t)battery_value);
+        lv_label_set_text_fmt(gui_guider.screen_vref, "%1.2fV", vref_value);
+        lv_label_set_text_fmt(gui_guider.screen_temperature, "%2.0fC", temperature);
 
         vTaskDelay(10000);
     }
@@ -222,6 +266,31 @@ static void task_user_if(void *pvParameters)
 static void task_test_only_once(void *pvParameters)
 {
     while (1) {
+
+        vTaskDelay(100);
+    }
+}
+
+/**
+ * @brief LVGL 循环
+ *
+ * @param pvParameters
+ */
+static void task_gui(void *pvParameters)
+{
+    LCD_Fill(0, 0, LCD_W, LCD_H, WHITE);
+    LCD_Fill(0, 0, LCD_W, LCD_H, BLUE);
+    LCD_Fill(0, 0, LCD_W, LCD_H, RED);
+
+    lv_init();
+    lv_port_disp_init();
+    /* GUI Guider init */
+    setup_ui(&gui_guider);
+    events_init(&gui_guider);
+    // lv_demo_benchmark();
+    while (1) {
+        lv_task_handler();
+        vTaskDelay(10);
     }
 }
 

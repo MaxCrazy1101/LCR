@@ -48,13 +48,14 @@ OF SUCH DAMAGE.
 #include "dac.h"
 #include "adc.h"
 #include "tim.h"
+#include "spi.h"
 
-#include "gd32f4xx_gpio.h"
 #include "bsp_led.h"
 #include "bsp_key.h"
 #include "bsp_usart.h"
 #include "tim.h"
 // #include "bsp_pwm.h"
+#include "bsp_lcd.h"
 #include "bsp_sdram_exmc.h"
 #include "bsp_norflash_spi.h"
 // #include "retarget.h"
@@ -79,6 +80,7 @@ void bsp_Init(void)
     dma_config();
     dac_config();
     adc_config();
+    bsp_spi_config();
     bsp_init_extsdram(EXMC_SDRAM_DEVICE0);
     timer_clk_config();
     tim2_enable();
@@ -86,6 +88,8 @@ void bsp_Init(void)
     // tim5_config(240, 10);//10us ->10k
     tim6_config(240, 100); // 100us
     usart_gpio_config();
+    LCD_Init();
+    delay_1ms(10);
     printf("BSP Init Complete.\n");
 }
 
@@ -130,4 +134,10 @@ int main(void)
         printf("Error Soft Process. Check FreeRTOS Heap.");
         delay_1ms(1000);
     }
+}
+
+void __aeabi_assert(const char *err, const char *file, int line)
+{
+    /* 输出内容自己定 */
+    printf("Wrong parameters value: file %s on line %d\r\n", file, line);
 }

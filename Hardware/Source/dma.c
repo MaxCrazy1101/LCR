@@ -17,13 +17,35 @@ void dma_config()
     /* DMA中断配置 */
     dma_single_data_parameter_struct dma_struct;
     /* 清空中断标志位 */
+
+    dma_flag_clear(DMA0, DMA_CH4, DMA_INTF_FEEIF);
+    dma_flag_clear(DMA0, DMA_CH4, DMA_INTF_SDEIF);
+    dma_flag_clear(DMA0, DMA_CH4, DMA_INTF_TAEIF);
+    dma_flag_clear(DMA0, DMA_CH4, DMA_INTF_HTFIF);
+    dma_flag_clear(DMA0, DMA_CH4, DMA_INTF_FTFIF);
+
+    /* 配置 DMA0 channel 4 */
+    dma_channel_subperipheral_select(DMA0, DMA_CH4, DMA_SUBPERI0);
+    dma_struct.periph_addr = (uint32_t)&SPI_DATA(SPI1); // 外设地址 SPI1 data register
+    // dma_struct.memory0_addr        =;//暂不设置传输地址
+    dma_struct.direction = DMA_MEMORY_TO_PERIPH;
+    // dma_struct.number              = 100;//传输数量留空
+    dma_struct.periph_inc          = DMA_PERIPH_INCREASE_DISABLE;
+    dma_struct.memory_inc          = DMA_MEMORY_INCREASE_ENABLE; // 内存地址自加
+    dma_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;      // 位宽
+    dma_struct.priority            = DMA_PRIORITY_LOW;           // 优先级最高
+    dma_struct.circular_mode       = DMA_CIRCULAR_MODE_DISABLE;  // 失能循环模式
+    dma_single_data_mode_init(DMA0, DMA_CH4, &dma_struct);
+    nvic_irq_enable(DMA0_Channel4_IRQn, 9, 0); // 设置中断优先级
+    // dma_channel_enable(DMA0, DMA_CH4);//暂不开启
+
+    /* 配置 DMA0 channel 5 */
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_FEEIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_SDEIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_TAEIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_HTFIF);
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_FTFIF);
 
-    /* 配置 DMA0 channel 5 */
     dma_channel_subperipheral_select(DMA0, DMA_CH5, DMA_SUBPERI7);
     dma_struct.periph_addr         = DAC0_R12DH; // 外设地址 DAC0右对齐12位保持寄存器
     dma_struct.memory0_addr        = (uint32_t)SinWaveTable;

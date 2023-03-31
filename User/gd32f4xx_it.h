@@ -40,6 +40,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx.h"
 #include "main.h"
+#include "lvgl.h"
 #ifdef USE_FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"

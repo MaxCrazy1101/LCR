@@ -3,35 +3,41 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "gd32f4xx_direct_io.h"
-//-----------------LCD端口定义----------------
+#include "st7789.h"
 
-/* PB10 CLK
- * PB11 LCD_RES
- * PB12 LCD_DC
- * PB13 LCD_BLK
- * PB15 MOSI
- * */
+// 定义显示屏长宽
+#define LCD_W 240
+#define LCD_H 240
 
-#define LCD_RES_Clr() PBout(11) = 0 // RES
-#define LCD_RES_Set() PBout(11) = 1
+// »­±ÊÑÕÉ«
+#define WHITE      0xFFFF
+#define BLACK      0x0000
+#define BLUE       0x001F
+#define BRED       0XF81F
+#define GRED       0XFFE0
+#define GBLUE      0X07FF
+#define RED        0xF800
+#define MAGENTA    0xF81F
+#define GREEN      0x07E0
+#define CYAN       0x7FFF
+#define YELLOW     0xFFE0
+#define BROWN      0XBC40 // ×ØÉ«
+#define BRRED      0XFC07 // ×ØºìÉ«
+#define GRAY       0X8430 // »ÒÉ«
+#define DARKBLUE   0X01CF // ÉîÀ¶É«
+#define LIGHTBLUE  0X7D7C // Ç³À¶É«
+#define GRAYBLUE   0X5458 // »ÒÀ¶É«
+#define LIGHTGREEN 0X841F // Ç³ÂÌÉ«
+#define LGRAY      0XC618 // Ç³»ÒÉ«(PANNEL),´°Ìå±³¾°É«
+#define LGRAYBLUE  0XA651 // Ç³»ÒÀ¶É«(ÖÐ¼ä²ãÑÕÉ«)
+#define LBBLUE     0X2B12 // Ç³×ØÀ¶É«(Ñ¡ÔñÌõÄ¿µÄ·´É«)
 
-#define LCD_DC_Clr()  PBout(12) = 0 // DC
-#define LCD_DC_Set()  PBout(12) = 1
-
-// #define LCD_CS_Clr()  GPIO_ResetBits(GPIOA, GPIO_Pin_3) // CS
-// #define LCD_CS_Set()  GPIO_SetBits(GPIOA, GPIO_Pin_3)
-
-#define LCD_BLK_Clr() PBout(13) = 0 // BLK
-#define LCD_BLK_Set() PBout(13) = 1
-
-void LCD_GPIO_Init(void);                             // 初始化GPIO
-void LCD_Writ_Bus(u8 dat);                            // spi时序
-void LCD_WR_DATA8(u8 dat);                            // 写入一个字节
-void LCD_WR_DATA(u16 dat);                            // 写入2个字节
-void LCD_WR_REG(u8 dat);                              // 写入寄存器
-void LCD_Address_Set(u16 x1, u16 y1, u16 x2, u16 y2); // 设置目标地址
-void LCD_Init(void);                                  // LCD初始化
+void LCD_Init(void); // LCD初始化
+/* 启动dma */
+void lcd_dma_enable(uint16_t *color_p, uint32_t size);
+void LCD_Fill(uint16_t xsta, uint16_t ysta, uint16_t xend, uint16_t yend,
+              uint16_t color);                              // 指定区域填充颜色
+void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color); // 指定位置画一个点
 
 #ifdef __cplusplus
 }

@@ -37,6 +37,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx_it.h"
 #include "stdio.h"
+#include "lvgl.h"
 
 #define ERROR_INFO "\r\nEnter HardFault_Handler, System Halt.\r\n"
 
@@ -152,6 +153,23 @@ void EXTI0_IRQHandler(void)
     //     }
     //     exti_interrupt_flag_clear(EXTI_0); // 清中断标志位
     // }
+}
+
+/**
+ * @brief 47 This function handles DMA0 channel4 interrupt interrupt.
+ */
+void DMA0_Channel4_IRQHandler(void)
+{
+    // printf("In DMA0_Channel4_IRQHandler\n");
+    extern lv_disp_drv_t *disp_drv_p;
+    if (dma_interrupt_flag_get(DMA0, DMA_CH4, DMA_INT_FLAG_FTF) == SET) {
+        /* 传输完成中断 */
+        dma_interrupt_flag_clear(DMA0, DMA_CH4, DMA_INT_FLAG_FTF); // 清除中断标志
+        dma_interrupt_disable(DMA0, DMA_CH4, DMA_CHXCTL_FTFIE);    // 关闭中断
+        dma_channel_disable(DMA0, DMA_CH4);                        // 失能dma
+        // spi_i2s_data_frame_format_config(SPI1, SPI_FRAMESIZE_8BIT);
+        lv_disp_flush_ready(disp_drv_p);
+    }
 }
 
 /**

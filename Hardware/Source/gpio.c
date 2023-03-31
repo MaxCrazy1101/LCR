@@ -21,7 +21,8 @@ void gpio_config()
     /* once enabled the DAC, the corresponding GPIO pin is connected to the DAC converter automatically */
     gpio_mode_set(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO_PIN_4);
 
-    /* ADC引脚配置 PC5 */
+    /* ADC引脚配置 PA2 PC5 */
+    gpio_mode_set(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO_PIN_2);
     gpio_mode_set(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO_PIN_5);
 
     /* LED 引脚配置 */

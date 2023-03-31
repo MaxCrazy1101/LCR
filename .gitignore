@@ -12,7 +12,6 @@
 /obj
 /out
 /cmake-build-debug-armgcc
-/3rd_party
 
 # eide template
 *.ept

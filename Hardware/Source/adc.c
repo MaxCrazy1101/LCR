@@ -71,9 +71,10 @@ void adc0_config()
     /* ADC channel length config */
     adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, ADC0_CHANNEL_LENGTH);
     /* ADC routine channel config */
-    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_16, ADC_SAMPLETIME_56);
-    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_17, ADC_SAMPLETIME_56);
-    // adc_routine_channel_config(ADC0, 2, ADC_CHANNEL_18, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_2, ADC_SAMPLETIME_56);  // PA2 VBAT
+    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_16, ADC_SAMPLETIME_56); // Temperature
+    adc_routine_channel_config(ADC0, 2, ADC_CHANNEL_17, ADC_SAMPLETIME_56); // Vref
+    // adc_routine_channel_config(ADC0, 2, ADC_CHANNEL_18, ADC_SAMPLETIME_15);//MCU VBAT
 
     /* ADC trigger config */
     adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_RISING); // 外部上升沿触发
