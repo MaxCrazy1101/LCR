@@ -156,7 +156,7 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
- * @brief 47 This function handles DMA0 channel4 interrupt interrupt.
+ * @brief 31 This function handles DMA0 channel4 interrupt.
  */
 void DMA0_Channel4_IRQHandler(void)
 {
@@ -169,6 +169,21 @@ void DMA0_Channel4_IRQHandler(void)
         dma_channel_disable(DMA0, DMA_CH4);                        // 失能dma
         // spi_i2s_data_frame_format_config(SPI1, SPI_FRAMESIZE_8BIT);
         lv_disp_flush_ready(disp_drv_p);
+    }
+}
+
+/**
+ * @brief 31 This function handles ADC interrupt.
+ */
+void ADC_IRQHandler(void)
+{
+    printf("In ADC_IRQHandler\n");
+    if (adc_interrupt_flag_get(ADC1, ADC_INT_FLAG_EOC)) {
+        /* 传输完成中断 */
+        uint16_t tmp = UINT16_MAX;
+        while (tmp--) {
+        };
+        adc_interrupt_flag_clear(ADC1, ADC_INT_FLAG_EOC);
     }
 }
 

@@ -140,7 +140,7 @@ TIMER3 channel3 duty cycle = (12000/ 16000)* 100 = 75%
     // timer_channel_output_shadow_config(TIMER1, TIMER_CH_2, TIMER_OC_SHADOW_DISABLE);
 
     /* CH3 configuration in PWM mode1,duty cycle ~0% */
-    timer_channel_output_pulse_value_config(TIMER3, TIMER_CH_3, 10);
+    timer_channel_output_pulse_value_config(TIMER3, TIMER_CH_3, 5);
     timer_channel_output_mode_config(TIMER3, TIMER_CH_3, TIMER_OC_MODE_PWM0);
     timer_channel_output_shadow_config(TIMER3, TIMER_CH_3, TIMER_OC_SHADOW_DISABLE);
 
@@ -158,9 +158,13 @@ TIMER3 channel3 duty cycle = (12000/ 16000)* 100 = 75%
     /* 使能中断 */
     //    timer_interrupt_enable(BSP_TIMER, TIMER_INT_UP); // 使能更新事件中断
 }
+/**
+ * @brief 使能tim3触发ADC1
+ * 
+ */
 void tim3_enable()
 {
-    tim3_config(120, 100); // 20kHz
+    tim3_config(120, 10); // 200kHz
     /* 使能定时器 */
     timer_enable(TIMER3);
 }
@@ -200,7 +204,7 @@ void tim5_config(uint16_t prescaler, uint16_t period)
 
     timer_init(TIMER5, &timere_initpara); // 初始化定时器
 
-    timer_autoreload_value_config(TIMER5, 0x00);
+    timer_autoreload_value_config(TIMER5, 0xFF);
     timer_auto_reload_shadow_enable(TIMER5);
     timer_master_output_trigger_source_select(TIMER5, TIMER_TRI_OUT_SRC_UPDATE); // 更新事件
 

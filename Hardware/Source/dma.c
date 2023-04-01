@@ -48,7 +48,7 @@ void dma_config()
     dma_flag_clear(DMA0, DMA_CH5, DMA_INTF_FTFIF);
 
     dma_channel_subperipheral_select(DMA0, DMA_CH5, DMA_SUBPERI7);
-    dma_struct.periph_addr         = DAC0_R12DH; // 外设地址 DAC0右对齐12位保持寄存器
+    dma_struct.periph_addr         = 0x40007408; // 外设地址 DAC0右对齐12位保持寄存器
     dma_struct.memory0_addr        = (uint32_t)SinWaveTable;
     dma_struct.direction           = DMA_MEMORY_TO_PERIPH;
     dma_struct.number              = 100;

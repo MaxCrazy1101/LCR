@@ -131,11 +131,12 @@ void adc1_config()
 
     /* ADC校准 */
     adc_calibration_enable(ADC1);
+    // delay_1ms(10);
 
     // /* ADC 中断使能 */
     // adc_interrupt_flag_clear(ADC1, ADC_INT_FLAG_EOC);
     // adc_interrupt_enable(ADC1, ADC_INT_EOC);
 
     /* 使能 ADC 软件触发 */
-    //    adc_software_trigger_enable(ADC1, ADC_ROUTINE_CHANNEL);
+    // adc_software_trigger_enable(ADC1, ADC_ROUTINE_CHANNEL);
 }

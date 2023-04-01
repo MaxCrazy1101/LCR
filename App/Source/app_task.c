@@ -266,7 +266,7 @@ static void task_user_if(void *pvParameters)
 static void task_test_only_once(void *pvParameters)
 {
     while (1) {
-
+        // printf("%d\r\n", adc1_data[0]);
         vTaskDelay(100);
     }
 }

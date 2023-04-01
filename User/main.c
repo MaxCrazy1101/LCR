@@ -43,6 +43,8 @@ OF SUCH DAMAGE.
 #include "math.h"
 #include "arm_math.h"
 
+#include "bsp_nvic.h"
+
 #include "gpio.h"
 #include "dma.h"
 #include "dac.h"
@@ -72,8 +74,7 @@ void bsp_Init(void)
 {
     /* 开启系统配置时钟 */
     rcu_periph_clock_enable(RCU_SYSCFG);
-    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
-
+    nvic_config();
     systick_config();
     gpio_config();
     bsp_key_config();
@@ -85,7 +86,7 @@ void bsp_Init(void)
     timer_clk_config();
     tim2_enable();
     tim3_enable();
-    tim5_config(240, 10);//1M 1 100->10k 1M 10 100->1k
+    tim5_config(240, 10);  // 1M 1 100->10k 1M 10 100->1k
     tim6_config(240, 100); // 100us
     usart_gpio_config();
     LCD_Init();
