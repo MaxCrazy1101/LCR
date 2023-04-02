@@ -1,13 +1,3 @@
-/********************************************************************************
- * 文 件 名: bsp_basic_timer.c
- * 版 本 号: 初版
- * 修改作者: LC
- * 修改日期: 2022年04月18日
- * 功能介绍:
- ******************************************************************************
- * 注意事项:
- *********************************************************************************/
-
 #include "tim.h"
 #include "bsp_led.h"
 #include "stdio.h"
@@ -103,7 +93,6 @@ TIMER3 channel3 duty cycle = (12000/ 16000)* 100 = 75%
     rcu_periph_clock_enable(RCU_TIMER3);
 
     /* CK_TIMERx = 4 x CK_APB1  = 4x60M = 240MHZ */
-    rcu_timer_clock_prescaler_config(RCU_TIMER_PSC_MUL4); // 配置定时器时钟倍频器
 
     timer_deinit(TIMER3); // 复位定时器
 
@@ -160,11 +149,11 @@ TIMER3 channel3 duty cycle = (12000/ 16000)* 100 = 75%
 }
 /**
  * @brief 使能tim3触发ADC1
- * 
+ *
  */
 void tim3_enable()
 {
-    tim3_config(120, 10); // 200kHz
+    tim3_config(240, 100); // 10kHz
     /* 使能定时器 */
     timer_enable(TIMER3);
 }
@@ -204,8 +193,8 @@ void tim5_config(uint16_t prescaler, uint16_t period)
 
     timer_init(TIMER5, &timere_initpara); // 初始化定时器
 
-    timer_autoreload_value_config(TIMER5, 0xFF);
-    timer_auto_reload_shadow_enable(TIMER5);
+    // timer_autoreload_value_config(TIMER5, 0xFF);
+    // timer_auto_reload_shadow_enable(TIMER5);
     timer_master_output_trigger_source_select(TIMER5, TIMER_TRI_OUT_SRC_UPDATE); // 更新事件
 
     /* 无需中断 */

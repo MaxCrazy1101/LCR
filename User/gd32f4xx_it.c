@@ -38,6 +38,8 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_it.h"
 #include "stdio.h"
 #include "lvgl.h"
+#include "adc.h"
+#include "arm_math.h"
 
 #define ERROR_INFO "\r\nEnter HardFault_Handler, System Halt.\r\n"
 
@@ -169,6 +171,31 @@ void DMA0_Channel4_IRQHandler(void)
         dma_channel_disable(DMA0, DMA_CH4);                        // 失能dma
         // spi_i2s_data_frame_format_config(SPI1, SPI_FRAMESIZE_8BIT);
         lv_disp_flush_ready(disp_drv_p);
+    }
+}
+
+/**
+ * @brief 76 This function handles DMA1 channel3 interrupt.
+ */
+void DMA1_Channel3_IRQHandler(void)
+{
+    extern float32_t adc_ndata[ADC1_BUFFER_LENGTH];
+    extern uint8_t app_fft_data_ready;
+    if (dma_interrupt_flag_get(DMA1, DMA_CH3, DMA_INT_FLAG_FTF) == SET) {
+        /* 传输完成中断 */
+        dma_interrupt_disable(DMA1, DMA_CH3, DMA_CHXCTL_FTFIE); // 关闭中断
+        timer_disable(TIMER3);
+        if (app_fft_data_ready == 0) {
+            printf("[");
+            for (size_t i = 0; i < ADC1_BUFFER_LENGTH; i++) {
+                printf("%d,", adc1_data[i]);
+                adc_ndata[i] = (float32_t)adc1_data[i];
+            }
+            printf("]\r\n");
+            app_fft_data_ready = 1;
+        }
+        dma_interrupt_flag_clear(DMA1, DMA_CH3, DMA_INT_FLAG_FTF); // 清除中断标志
+        timer_enable(TIMER3);
     }
 }
 

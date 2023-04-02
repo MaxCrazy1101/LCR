@@ -17,7 +17,7 @@ typedef struct
 
 /* GPIO和PIN定义 */
 static const X_GPIO_T s_gpio_list[HARD_KEY_NUM] = {
-    {GPIO_IDR_CAL(GPIOA, 0), 0}, /* K1 */
+    {GPIO_IDR_CAL(GPIOA, 0), 1}, /* K1 */
                                  // {GPIOC, GPIO_PIN_13, 0}, /* K2 */
                                  // {GPIOH, GPIO_PIN_4, 0},  /* K3 */
                                  // {GPIOG, GPIO_PIN_2, 0},  /* JOY_U */
@@ -304,7 +304,6 @@ static void bsp_DetectKey(uint8_t i)
 void bsp_KeyScan(void)
 {
     uint8_t i;
-
     for (i = 0; i < KEY_COUNT; i++) {
         bsp_DetectKey(i);
     }

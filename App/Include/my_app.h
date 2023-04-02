@@ -9,6 +9,8 @@ extern "C" {
 #include "semphr.h"
 #include "event_groups.h"
 
+#define SAMPLE_RATE 10000 // 采样频率
+#define FFT_SIZE    2048  // FFT变换点数
 /**
  * @brief 创建任务
  */

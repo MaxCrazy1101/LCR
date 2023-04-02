@@ -41,8 +41,7 @@ void bsp_spi_config()
         spi_init_struct.endian               = SPI_ENDIAN_MSB;           // 高位先行
         spi_init(SPI1, &spi_init_struct);
     }
-    // 开启SPI4
-    // TODO: dma配置
+    // 开启SPI1
     spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
     spi_enable(SPI1);
 }

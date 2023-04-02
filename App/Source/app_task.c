@@ -16,6 +16,8 @@
 #include "gui_guider.h"
 #include "events_init.h"
 
+#include "pga113.h"
+
 // #include "lv_demos.h"
 // #include "lv_examples.h"
 /*
@@ -67,8 +69,22 @@ static TaskHandle_t xHandleTaskTEST   = NULL;
 static SemaphoreHandle_t xMutex       = NULL;
 EventGroupHandle_t xCreatedEventGroup = NULL;
 
-arm_rfft_fast_instance_f32 S;
-uint32_t fft_size = 2048;
+/* FFT变量 */
+arm_rfft_fast_instance_f32 fft_cfg;
+/* FFT数组 */
+uint8_t app_fft_data_ready    = 0;
+float32_t adc_ndata[FFT_SIZE] = {0}; // 归一化后的adc数据
+float32_t fft_data[FFT_SIZE]  = {0};
+/* 参考信号 */
+float32_t ref_iwave[FFT_SIZE]; // 存储参考I信号的数组
+float32_t ref_qwave[FFT_SIZE]; // 存储参考Q信号的数组
+
+// // 计算电压值
+// static inline float voltage(float adc_value)
+// {
+//     float adc_voltage = adc_value / (1 << ADC_BITS) * ADC_REF_VOLTAGE;
+//     return adc_voltage;
+// }
 
 static void vTaskUsageRate(void)
 {
@@ -146,39 +162,81 @@ void app_create_task(void)
  */
 static void task_lcr(void *pvParameters)
 {
-    /* 实数rfft点数 */
-    fft_size = 2048;
 
     /* 初始化结构体S中的参数 */
-    arm_rfft_fast_init_f32(&S, fft_size);
+    arm_rfft_fast_init_f32(&fft_cfg, FFT_SIZE);
+    // /* 初始化汉明窗 */
+    // float32_t hamming_window[FFT_SIZE];
+    // for (uint32_t i = 0; i < FFT_SIZE; i++) {
+    //     hamming_window[i] = 0.54f - 0.46f * arm_cos_f32(2.0f * PI * i / (FFT_SIZE - 1));
+    // }
+
+    /* 生成频率为 1000 Hz的IQ参考信号 */
+    const float32_t amplitude     = 1.0f;        // 正弦波幅度
+    const float32_t sampling_rate = SAMPLE_RATE; // 采样率
+    const float32_t frequency     = 1000.0f;     // 正弦波频率
+    const float32_t phase_i       = 0.0f;        // 正弦波相位
+
+    for (int i = 0; i < FFT_SIZE; i++) {
+        float32_t time = (float32_t)i / sampling_rate;
+        ref_iwave[i]   = amplitude * arm_sin_f32(2.0f * PI * frequency * time + phase_i);
+        ref_qwave[i]   = amplitude * arm_cos_f32(2.0f * PI * frequency * time + phase_i);
+        // printf("%f %f\r\n", ref_iwave[i], ref_qwave[i]);
+    }
+
+    // TODO: 加窗
     while (1) {
-        //     if (os_evt_wait_or(StartTaskWaitFlag, 0xFFFF) == OS_R_EVT) {
-        //         xResult = os_evt_get();
+        if (app_fft_data_ready == 1) {
 
-        //         switch (xResult) {
-        //             case DspFFT2048Pro_15:
-        //                 /* 读取的是ADC3的位置 */
-        //                 g_DSO1->usCurPos = 10240 - DMA2_Stream1->NDTR;
+            /* 将ADC采样值转换为F32格式并归一化 */
+            arm_scale_f32(adc_ndata, 1.0f / 4096, adc_ndata, FFT_SIZE);
+            /* 与参考I信号相乘 */
+            arm_mult_f32(adc_ndata, ref_iwave, fft_data, FFT_SIZE);
+            /* RFFT变换 */
+            arm_rfft_fast_f32(&fft_cfg, fft_data, fft_data, 0);
+            /* 计算频率分辨率 */
+            float freq_resolution = (float)SAMPLE_RATE / FFT_SIZE;
 
-        //                 /* 读取的是ADC1的位置 */
-        //                 g_DSO2->usCurPos = 10240 - DMA2_Stream0->NDTR;
+            /* 找到最大的幅值和对应的频率 */
+            float max_amplitude = 0;
+            int max_index       = 0;
+            for (int i = 0; i < FFT_SIZE / 2 + 1; i++) {
+                float amplitude = fft_data[i];
+                if (amplitude > max_amplitude) {
+                    max_amplitude = amplitude;
+                    max_index     = i;
+                }
+            }
+            float max_freq = freq_resolution * max_index;
+            printf("Max frequency: %fHz\n", max_freq);
 
-        //                 DSO2_WaveTrig(g_DSO2->usCurPos);
-        //                 DSO1_WaveTrig(g_DSO1->usCurPos);
-        //                 DSO2_WaveProcess();
-        //                 DSO1_WaveProcess();
-        //                 break;
+            // 计算电压值
+            // float adc_voltage = voltage(fft_data[max_index]);
+            printf("ADC voltage: %fV\n", fft_data[max_index]);
 
-        //             case DspMultiMeterPro_0:
-        //                 g_uiAdcAvgSample = ADC_GetSampleAvgN();
-        //                 break;
+            // /* 与参考Q信号相乘 */
+            arm_mult_f32(adc_ndata, ref_qwave, fft_data, FFT_SIZE);
+            /* RFFT变换 */
+            arm_rfft_fast_f32(&fft_cfg, fft_data, fft_data, 0);
+            /* 找到最大的幅值和对应的频率 */
+            max_amplitude = 0;
+            max_index     = 0;
+            for (int i = 0; i < FFT_SIZE / 2 + 1; i++) {
+                float amplitude = fft_data[i];
+                if (amplitude > max_amplitude) {
+                    max_amplitude = amplitude;
+                    max_index     = i;
+                }
+            }
+            max_freq = freq_resolution * max_index;
+            printf("Max frequency: %fHz\n", max_freq);
 
-        //             /* 其它位暂未使用 */
-        //             default:
-        //                 printf_taskdbg("xResult = %x\r\n", xResult);
-        //                 break;
-        //         }
-        //     }
+            // 计算电压值
+            // float adc_voltage = voltage(fft_data[max_index]);
+            printf("ADC voltage: %fV\n", fft_data[max_index]);
+            app_fft_data_ready = 0;
+        }
+
         vTaskDelay(1000);
     }
 }
@@ -200,7 +258,7 @@ static void task_adc0(void *pvParameters)
         vref_value    = (adc0_data[2] * 3.3f / 4096);
 
         // printf("The temperature origin data is %d \r ,Battery Voltage origin data: %d \n", adc0_data[0], adc0_data[1]);
-        thread_safe_printf("Battery: %5.2f V, Temperature: %2.0f degrees Celsius, Vref: %5.2fV.\r\n", adc0_data[0] * 3.3f * 2 / 4096, temperature, vref_value);
+        // thread_safe_printf("Battery: %5.2f V, Temperature: %2.0f degrees Celsius, Vref: %5.2fV.\r\n", adc0_data[0] * 3.3f * 2 / 4096, temperature, vref_value);
         if (battery_value < 0) {
             battery_value = 0;
         } else if (battery_value > 100) {
@@ -222,14 +280,25 @@ static void task_user_if(void *pvParameters)
 {
     uint8_t ucKeyCode;
     uint8_t pcWriteBuffer[500];
-
+    uint8_t tmp = 1;
     while (1) {
         ucKeyCode = bsp_key_dequeue();
 
         if (ucKeyCode != KEY_NONE) {
             switch (ucKeyCode) {
-                /* K1键按下 打印任务执行情况 */
                 case KEY_DOWN_K1:
+                    printf("In KEY_DOWN_K1\r\n");
+                    if (tmp) {
+                        pga113_set_gain(0xE1F1);
+                        pga113_set_gain(PGA11X_CMD_WRITE | PGA11X_GAIN50 << 4 | PGA11X_CH1);
+                    } else {
+                        pga113_set_gain(0xE1F1);
+                        pga113_set_gain(PGA11X_CMD_WRITE | PGA11X_GAIN1 << 4 | PGA11X_CH0_VCAL);
+                    }
+                    tmp = 1 - tmp;
+                    break;
+                /* K1键按下 打印任务执行情况 */
+                case KEY_LONG_K1:
                     /* 任务运行状态的定义如下，跟上面串口打印字母X, B, R, D, S对应：
                      * #define tskRUNNING_CHAR      ( 'X' )  运行
                      * #define tskBLOCKED_CHAR		( 'B' )  阻塞
@@ -265,9 +334,25 @@ static void task_user_if(void *pvParameters)
  */
 static void task_test_only_once(void *pvParameters)
 {
+    uint8_t tmp = 1;
     while (1) {
         // printf("%d\r\n", adc1_data[0]);
-        vTaskDelay(100);
+        // printf("[");
+        // for (size_t i = 0; i < 1024; i++)
+        // {
+        //     printf("%d,", adc1_data[i]);
+        // }
+        // printf("]\r\n");
+        dma_interrupt_flag_clear(DMA1, DMA_CH3, DMA_INT_FLAG_FTF); // 清除中断标志
+        dma_interrupt_enable(DMA1, DMA_CH3, DMA_CHXCTL_FTFIE);
+        // tmp = 1 - tmp;
+        // if (tmp == 1) {
+        //     pga113_set_gain(PGA113_CH0_GAIN10);
+
+        // } else {
+        //     pga113_set_gain(PGA113_CH0_GAIN1);
+        // }
+        vTaskDelay(10000);
     }
 }
 

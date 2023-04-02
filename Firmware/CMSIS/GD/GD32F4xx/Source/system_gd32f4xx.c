@@ -122,7 +122,6 @@ static void system_clock_240m_8m_hxtal(void);
 #elif defined (__SYSTEM_CLOCK_240M_PLL_25M_HXTAL)
 uint32_t SystemCoreClock = __SYSTEM_CLOCK_240M_PLL_25M_HXTAL;
 static void system_clock_240m_25m_hxtal(void);
-
 #endif /* __SYSTEM_CLOCK_IRC16M */
 
 /* configure the system clock */
